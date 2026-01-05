@@ -72,6 +72,7 @@ struct configuration
 {
     enum class keyer_t
     {
+        none,
         internal_keyer,
         external_keyer,
         default_keyer = external_keyer

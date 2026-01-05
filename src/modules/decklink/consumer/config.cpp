@@ -158,11 +158,13 @@ configuration parse_xml_config(const boost::property_tree::wptree&  ptree,
     auto keyer = ptree.get(L"keyer", L"default");
     if (keyer == L"external") {
         config.keyer = configuration::keyer_t::external_keyer;
+        config.duplex = configuration::duplex_t::full_duplex;
     } else if (keyer == L"internal") {
         config.keyer = configuration::keyer_t::internal_keyer;
+        config.duplex = configuration::duplex_t::full_duplex;
     } else if (keyer == L"external_separate_device") {
-        config.keyer = configuration::keyer_t::external_keyer;
-
+        config.keyer = configuration::keyer_t::none;
+        config.duplex           = configuration::duplex_t::half_duplex;
         auto key_config         = config.primary; // Copy the primary config
         key_config.device_index = ptree.get(L"key-device", static_cast<int64_t>(0));
         if (key_config.device_index == 0) {
@@ -170,6 +172,9 @@ configuration parse_xml_config(const boost::property_tree::wptree&  ptree,
         }
         key_config.key_only = true;
         config.secondaries.push_back(key_config);
+    } else if (keyer == L"none") {
+        config.keyer  = configuration::keyer_t::none;
+        config.duplex = configuration::duplex_t::half_duplex;
     }
 
     config.embedded_audio    = ptree.get(L"embedded-audio", config.embedded_audio);
@@ -219,6 +224,8 @@ configuration parse_amcp_config(const std::vector<std::wstring>&     params,
         config.keyer = configuration::keyer_t::internal_keyer;
     } else if (contains_param(L"EXTERNAL_KEY", params)) {
         config.keyer = configuration::keyer_t::external_keyer;
+    } else if (contains_param(L"NO_KEY", params)) {
+        config.keyer = configuration::keyer_t::none;
     } else {
         config.keyer = configuration::keyer_t::default_keyer;
     }
