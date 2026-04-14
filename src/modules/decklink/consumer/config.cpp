@@ -222,12 +222,27 @@ configuration parse_amcp_config(const std::vector<std::wstring>&     params,
 
     if (contains_param(L"INTERNAL_KEY", params)) {
         config.keyer = configuration::keyer_t::internal_keyer;
+        config.duplex = configuration::duplex_t::full_duplex;
     } else if (contains_param(L"EXTERNAL_KEY", params)) {
         config.keyer = configuration::keyer_t::external_keyer;
+        config.duplex = configuration::duplex_t::full_duplex;
     } else if (contains_param(L"NO_KEY", params)) {
         config.keyer = configuration::keyer_t::none;
+        config.duplex = configuration::duplex_t::half_duplex;
     } else {
-        config.keyer = configuration::keyer_t::default_keyer;
+        auto separate_key_device = get_param(L"SEPARATE_KEY", params, -1);
+        if (separate_key_device > -1) {
+            config.duplex    = configuration::duplex_t::half_duplex;
+            auto key_config         = config.primary; // Copy the primary config
+            key_config.device_index = separate_key_device;
+            if (key_config.device_index == 0) {
+                key_config.device_index = config.primary.device_index + 1;
+            }
+            key_config.key_only = true;
+            config.secondaries.push_back(key_config);
+        } else {
+            config.keyer = configuration::keyer_t::default_keyer;
+        }
     }
 
     if (contains_param(L"FULL_DUPLEX", params)) {
@@ -238,6 +253,11 @@ configuration parse_amcp_config(const std::vector<std::wstring>&     params,
 
     if (contains_param(L"LOW_LATENCY", params)) {
         config.latency = configuration::latency_t::low_latency;
+    }
+
+    auto buffer_depth = get_param(L"BUFFER_DEPTH", params, -1);
+    if (buffer_depth > -1) {
+        config.base_buffer_depth = buffer_depth;
     }
 
     config.embedded_audio   = contains_param(L"EMBEDDED_AUDIO", params);
