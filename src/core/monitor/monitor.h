@@ -65,6 +65,20 @@ class state
             return *this;
         }
 
+        // Explicit overloads for each data_t variant type to avoid
+        // ambiguous boost::variant implicit conversion in C++20.
+        state_proxy& operator=(bool data)              { return *this = data_t(data); }
+        state_proxy& operator=(std::int32_t data)      { return *this = data_t(data); }
+        state_proxy& operator=(std::int64_t data)      { return *this = data_t(data); }
+        state_proxy& operator=(std::uint32_t data)     { return *this = data_t(data); }
+        state_proxy& operator=(std::uint64_t data)     { return *this = data_t(data); }
+        state_proxy& operator=(float data)             { return *this = data_t(data); }
+        state_proxy& operator=(double data)            { return *this = data_t(data); }
+        state_proxy& operator=(const std::string& data)  { return *this = data_t(data); }
+        state_proxy& operator=(const std::wstring& data) { return *this = data_t(data); }
+        state_proxy& operator=(std::string&& data)       { return *this = data_t(std::move(data)); }
+        state_proxy& operator=(std::wstring&& data)      { return *this = data_t(std::move(data)); }
+
         template <typename T>
         state_proxy operator[](const T& key)
         {

@@ -427,8 +427,8 @@ struct flash_producer : public core::frame_producer
         state_["host/path"]   = filename_;
         state_["host/width"]  = width_;
         state_["host/height"] = height_;
-        state_["host/fps"]    = fps_;
-        state_["buffer"]      = output_buffer_.size() % buffer_size_;
+        state_["host/fps"]    = fps_.load();
+        state_["buffer"]      = static_cast<std::int32_t>(output_buffer_.size() % buffer_size_);
 
         return frame;
     }

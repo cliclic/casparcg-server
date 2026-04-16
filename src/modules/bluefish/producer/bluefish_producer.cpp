@@ -423,8 +423,8 @@ struct bluefish_producer
                 std::lock_guard<std::mutex> lock(state_mutex_);
                 state_["file/name"]              = model_name_;
                 state_["file/path"]              = device_index_;
-                state_["file/video/width"]       = static_cast<long>(width);
-                state_["file/video/height"]      = static_cast<long>(height);
+                state_["file/video/width"]       = static_cast<std::int32_t>(width);
+                state_["file/video/height"]      = static_cast<std::int32_t>(height);
                 state_["file/audio/sample-rate"] = format_desc_.audio_sample_rate;
                 state_["file/audio/channels"]    = format_desc_.audio_channels;
                 state_["file/fps"]               = static_cast<double>(fps);

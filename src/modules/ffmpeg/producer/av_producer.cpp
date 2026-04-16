@@ -1009,7 +1009,7 @@ struct AVProducer::Impl
         boost::lock_guard<boost::mutex> lock(state_mutex_);
         state_["file/clip"] = {start().value_or(0) / format_desc_.fps, duration().value_or(0) / format_desc_.fps};
         state_["file/time"] = {time() / format_desc_.fps, file_duration().value_or(0) / format_desc_.fps};
-        state_["loop"]      = loop_;
+        state_["loop"]      = loop_.load();
     }
 
     core::draw_frame prev_frame(const core::video_field field)
